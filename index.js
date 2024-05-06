@@ -35,7 +35,7 @@ app.get('/herois', async (req, res) => {
 app.post('/herois',async (req, res) => {
     try {
         const {nome, poder, nivel, hp} = req.body;
-        await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, %4)', [nome, poder, nivel, hp]);
+        await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, $4)', [nome, poder, nivel, hp]);
         res.status(201).send({mensagem: 'Heros criado com sucesso'});
     } catch (error) {
         console.error('Erro ao criar heroi', error);
@@ -58,7 +58,7 @@ app.put('/herois/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { nome, poder, nivel, hp } = req.body;
-        await pool.query('UPDATE herois SET nome = $1, poder = $2 nivel = $3 WHERE id = $3', [nome, poder, nivel, hp])
+        await pool.query('UPDATE herois SET nome = $1, poder = $2, nivel = $3, hp = $4 WHERE id = $5', [nome, poder, nivel, hp, id])
         res.status(200).send({mensagem: 'heroi atualizado com sucesso'})
     } catch (error) {
         console.error('Erro ao atualizar', error);
@@ -81,4 +81,14 @@ app.get('/herois/:id', async(req, res) => {
         console.error('Erro ao pegar heroi por ID ', error);
         res.status(500).send('Erro ao pegar heroi por ID');
     }
+});
+
+
+
+
+
+
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT} 🤯😤🤠🤬`);
 });

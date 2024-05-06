@@ -85,9 +85,36 @@ app.get('/herois/:id', async(req, res) => {
 
 
 
+// ROTAS BATALHAS
 
+app.get('/batalhas', async (req, res) => {
+    try {
+        const resultado = await pool.query('SELECT * FROM batalhas');
+        res.json({
+            total: resultado.rowCount,
+            batalhas: resultado.rows,
+        });
+    } catch (error) {
+        console.error('Erro ao obter todas as batalhas', error);
+        res.status(500).send('Erro ao obter as batalhas');
+    }
+});
 
-
+app.get('/batalhas/:id/:id', async(req, res) => {
+    try {
+        const { id } = req. params;
+        const resultado = await pool.query('SELECT * FROM batalhas WHERE id = $1', [id])
+        if(resultado.rowCount == 0){
+            res.status(404).send({mensagem: 'Id não encontrado'});
+        }
+        res.json({
+            batalhas: resultado.rows[0],
+        })
+    } catch (error) {
+        console.error('Erro ao pegar batalhas por ID ', error);
+        res.status(500).send('Erro ao pegar batalhas por ID');
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT} 🤯😤🤠🤬`);

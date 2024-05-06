@@ -19,18 +19,18 @@ app.get('/', (req, res) => {
     res.send('ta funfando');
 })
 
-// app.get('/herois', async (req, res) => {
-//     try {
-//         const resultado = await pool.query('SELECT * FROM herois');
-//         res.json({
-//             total: resultado.rowCount,
-//             herois: resultado.rows,
-//         });
-//     } catch (error) {
-//         console.error('Erro ao obter todos os herois', error);
-//         res.status(500).send('Erro ao obter os herois');
-//     }
-// });
+app.get('/herois', async (req, res) => {
+    try {
+        const resultado = await pool.query('SELECT * FROM herois');
+        res.json({
+            total: resultado.rowCount,
+            herois: resultado.rows,
+        });
+    } catch (error) {
+        console.error('Erro ao obter todos os herois', error);
+        res.status(500).send('Erro ao obter os herois');
+    }
+});
 
 // app.post('/herois',async (req, res) => {
 //     try {

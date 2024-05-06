@@ -43,16 +43,16 @@ app.post('/herois',async (req, res) => {
     }
 });
 
-// app.delete('/herois/:id', async (req, res) => {
-//     try {
-//         const {id} = req.params;
-//         const resultado = await pool.query('DELETE FROM herois WHERE id = $1', [id]);
-//         res.status(200).send({mensagem: 'heroi deletado com sucesso'})
-//     } catch (error) {
-//         console.error('Erro ao apagar heois', error);
-//         res.status(500).send('Erro ao apagar o heroi');
-//     }
-// });
+app.delete('/herois/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const resultado = await pool.query('DELETE FROM herois WHERE id = $1', [id]);
+        res.status(200).send({mensagem: 'heroi deletado com sucesso'})
+    } catch (error) {
+        console.error('Erro ao apagar heois', error);
+        res.status(500).send('Erro ao apagar o heroi');
+    }
+});
 
 // app.put('/herois/:id', async (req, res) => {
 //     try {

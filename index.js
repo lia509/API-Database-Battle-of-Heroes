@@ -32,16 +32,16 @@ app.get('/herois', async (req, res) => {
     }
 });
 
-// app.post('/herois',async (req, res) => {
-//     try {
-//         const {nome, poder, nivel, hp} = req.body;
-//         await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, %4)', [nome, poder, nivel, hp]);
-//         res.status(201).send({mensagem: 'Heros criado com sucesso'});
-//     } catch (error) {
-//         console.error('Erro ao criar heroi', error);
-//         res.status(500).send('Erro ao criar heroi');
-//     }
-// });
+app.post('/herois',async (req, res) => {
+    try {
+        const {nome, poder, nivel, hp} = req.body;
+        await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, %4)', [nome, poder, nivel, hp]);
+        res.status(201).send({mensagem: 'Heros criado com sucesso'});
+    } catch (error) {
+        console.error('Erro ao criar heroi', error);
+        res.status(500).send('Erro ao criar heroi');
+    }
+});
 
 // app.delete('/herois/:id', async (req, res) => {
 //     try {

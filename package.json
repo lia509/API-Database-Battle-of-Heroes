@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0",
+    "pg": "^8.11.5"
+  },
+  "name": "api-database-battle-of-heroes",
+  "description": "API de Heróis, criação de um jogo onde mostra a batalha destes heróis. Banco de dados armazena as informações dos heróis, as relacionando com a tabela de \"Histórico de batalha\".",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

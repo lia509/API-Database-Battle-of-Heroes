@@ -151,29 +151,54 @@ async function calcularVencedor(heroi1Id, heroi2Id) {
 
     let poderes = ["Teletransporte", "Sentidos Aprimorados", "Fator de Cura Acelerado", "Transmorfismo Corporal"];
     //maior level ganha
-    if (heroi1.rows[0].nivel > heroi2.rows[0].nivel) {
+
+
+    if (heroi1Id === poderes[0] && heroi2Id === poderes[1]) {
+        return heroi2Id;
+    } else if (heroi1Id === poderes[0] && heroi2Id === poderes[2]){
+        return heroi1Id;
+    }else if (heroi1Id === poderes[0] && heroi2Id === poderes[3]){
+        return heroi2Id;
+    
+    }else if (heroi1Id === poderes[1] && heroi2Id === poderes[0]){
+        return heroi1Id;
+    }else if (heroi1 === poderes[1] && heroi2Id === poderes[2]){
+        return heroi1Id;
+    }else if (heroi1Id === poderes[1] && heroi2Id === poderes[3]){
+        return heroi1Id;
+    
+    }else if (heroi1Id === poderes[2] && heroi2Id === poderes[0]){
+        return heroi2Id;
+    }else if (heroi1Id === poderes[2] && heroi2Id === poderes[1]){
+        return heroi2Id;
+    }else if (heroi1Id === poderes[2] && heroi2Id === poderes[3]){
+        return heroi2Id;
+    
+    }else if (heroi1Id === poderes[3] && heroi2Id === poderes[0]){
+        return heroi1Id;
+    }else if (heroi1Id === poderes[3] && heroi2Id === poderes[1]){
+        return heroi2Id;
+    }else if (heroi1Id === poderes[3] && heroiId2 === poderes[2]){
+        return heroi1Id;
+    } else {
+        if (heroi1.rows[0].nivel > heroi2.rows[0].nivel) {
         return heroi1Id;
     } else if (heroi1.rows[0].nivel < heroi2.rows[0].nivel) {
         return heroi2Id;
-    } else {
-        //se o level for igual, maior hp ganha
+    }else {
+       
         if (heroi1.rows[0].hp > heroi2.rows[0].hp) {
             return heroi1Id;
         } else if (heroi1.rows[0].hp < heroi2.rows[0].hp) {
             return heroi2Id;
 
         } else {
-            if (heroi1 === poderes[0] && heroi2 === poderes[1]) {
-            return heroi2;
-        } else if (heroi1 === poderes[2] && heroi2 === poderes[3]){
-            return heroi2;
+            return heroi1Id;
         }
         
 }
 }
 }
-
-
 
 
 

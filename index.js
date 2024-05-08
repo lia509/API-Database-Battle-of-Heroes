@@ -32,11 +32,19 @@ app.get('/herois', async (req, res) => {
     }
 });
 
-app.post('/herois',async (req, res) => {
+app.post('/herois', async (req, res) => {
     try {
-        const {nome, poder, nivel, hp} = req.body;
-        await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, $4)', [nome, poder, nivel, hp]);
-        res.status(201).send({mensagem: 'Heros criado com sucesso'});
+        const { nome, poder, nivel, hp } = req.body;
+
+        let poderes = ["Teletransporte", "Sentidos Aprimorados", "Fator de Cura Acelerado", "Transmorfismo Corporal"];
+        if (!poderes.includes(poder)) {
+            res.status(500).send('O poder precisa ser: Teletransporte, Sentidos Aprimorados, Fator de Cura Acelerado ou Transmorfismo Corporal.');
+        } else {
+            await pool.query('INSERT INTO herois (nome, poder, nivel, hp) VALUES ($1, $2, $3, $4)', [nome, poder, nivel, hp]);
+            res.status(201).send({ mensagem: 'Heros criado com sucesso' });
+        }
+
+
     } catch (error) {
         console.error('Erro ao criar heroi', error);
         res.status(500).send('Erro ao criar heroi');
@@ -45,9 +53,9 @@ app.post('/herois',async (req, res) => {
 
 app.delete('/herois/:id', async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const resultado = await pool.query('DELETE FROM herois WHERE id = $1', [id]);
-        res.status(200).send({mensagem: 'heroi deletado com sucesso'})
+        res.status(200).send({ mensagem: 'heroi deletado com sucesso' })
     } catch (error) {
         console.error('Erro ao apagar heois', error);
         res.status(500).send('Erro ao apagar o heroi');
@@ -59,7 +67,7 @@ app.put('/herois/:id', async (req, res) => {
         const { id } = req.params;
         const { nome, poder, nivel, hp } = req.body;
         await pool.query('UPDATE herois SET nome = $1, poder = $2, nivel = $3, hp = $4 WHERE id = $5', [nome, poder, nivel, hp, id])
-        res.status(200).send({mensagem: 'heroi atualizado com sucesso'})
+        res.status(200).send({ mensagem: 'heroi atualizado com sucesso' })
     } catch (error) {
         console.error('Erro ao atualizar', error);
         res.status(500).send('Erro ao atualizar');
@@ -67,12 +75,12 @@ app.put('/herois/:id', async (req, res) => {
 });
 
 
-app.get('/herois/:id', async(req, res) => {
+app.get('/herois/:id', async (req, res) => {
     try {
-        const { id } = req. params;
+        const { id } = req.params;
         const resultado = await pool.query('SELECT * FROM herois WHERE id = $1', [id])
-        if(resultado.rowCount == 0){
-            res.status(404).send({mensagem: 'Id não encontrado'});
+        if (resultado.rowCount == 0) {
+            res.status(404).send({ mensagem: 'Id não encontrado' });
         }
         res.json({
             usuarios: resultado.rows[0],
@@ -85,69 +93,103 @@ app.get('/herois/:id', async(req, res) => {
 
 app.get("/herois/nome/:nome", async (req, res) => {
     try {
-      const { nome } = req.params;
-      const { rows } = await pool.query("SELECT * FROM herois WHERE nome = $1", [
-        nome,
-      ]);
-      res.status(200).send({
-        message: "Herois encontrados com sucesso!",
-        herois: rows,
-      });
+        const { nome } = req.params;
+        const { rows } = await pool.query("SELECT * FROM herois WHERE nome = $1", [
+            nome,
+        ]);
+        res.status(200).send({
+            message: "Herois encontrados com sucesso!",
+            herois: rows,
+        });
     } catch (error) {
-      console.error("Erro ao buscar heroi", error);
-      res.status(500).send("Erro ao buscar herois");
+        console.error("Erro ao buscar heroi", error);
+        res.status(500).send("Erro ao buscar herois");
     }
-  });
+});
 
-  app.get("/herois/poder/:poder", async (req, res) => {
+app.get("/herois/poder/:poder", async (req, res) => {
     try {
-      const { poder } = req.params;
-      const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
-        poder,
-      ]);
-      res.status(200).send({
-        message: "Herois encontrados com sucesso!",
-        herois: rows,
-      });
+        const { poder } = req.params;
+        const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
+            poder,
+        ]);
+        res.status(200).send({
+            message: "Herois encontrados com sucesso!",
+            herois: rows,
+        });
     } catch (error) {
-      console.error("Erro ao buscar heroi", error);
-      res.status(500).send("Erro ao buscar heroi");
+        console.error("Erro ao buscar heroi", error);
+        res.status(500).send("Erro ao buscar heroi");
     }
-  });
+});
 
 
 // ROTAS BATALHAS
 
-app.get('/batalhas', async (req, res) => {
+app.get('/batalhas/:idHeroi1/:idHeroi2', async (req, res) => {
     try {
-        const resultado = await pool.query('SELECT * FROM batalhas');
-        res.json({
-            total: resultado.rowCount,
-            batalhas: resultado.rows,
-        });
+        const { idHeroi1, idHeroi2 } = req.params;
+
+        const vencedorId = await calcularVencedor(idHeroi1, idHeroi2);
+
+        // Insere o registro da batalha na tabela battles
+        await pool.query('INSERT INTO batalhas (heroi1_id, heroi2_id, vencedor_id) VALUES ($1, $2, $3)', [idHeroi1, idHeroi2, vencedorId]);
+
+        const { rows } = await pool.query('SELECT * FROM herois WHERE id = $1', [vencedorId]);
+        res.json({ vencedor: rows[0], message: 'Batalha registrada com sucesso!' });
+        
     } catch (error) {
-        console.error('Erro ao obter todas as batalhas', error);
-        res.status(500).send('Erro ao obter as batalhas');
+        console.error("Erro ao registrar batalha", error);
+        res.status(500).send("Erro ao registrar batalha");
     }
 });
 
 
+async function calcularVencedor(heroi1Id, heroi2Id) {
+    const heroi1 = await pool.query('SELECT * FROM herois WHERE id = $1', [heroi1Id]);
+    const heroi2 = await pool.query('SELECT * FROM herois WHERE id = $1', [heroi2Id]);
 
-app.get('/batalhas/:id/:id', async(req, res) => {
-    try {
-        const { id } = req. params;
-        const resultado = await pool.query('SELECT herois.id AS Herois FROM herois INNER JOIN batalhas ON batalhas.heroi1_id = heroi2_id', [id])
-        if(resultado.rowCount == 0){
-            res.status(404).send({mensagem: 'Id não encontrado'});
+    let poderes = ["Teletransporte", "Sentidos Aprimorados", "Fator de Cura Acelerado", "Transmorfismo Corporal"];
+    //maior level ganha
+    if (heroi1.rows[0].nivel > heroi2.rows[0].nivel) {
+        return heroi1Id;
+    } else if (heroi1.rows[0].nivel < heroi2.rows[0].nivel) {
+        return heroi2Id;
+    } else {
+        //se o level for igual, maior hp ganha
+        if (heroi1.rows[0].hp > heroi2.rows[0].hp) {
+            return heroi1Id;
+        } else if (heroi1.rows[0].hp < heroi2.rows[0].hp) {
+            return heroi2Id;
+
+        } else {
+            if (heroi1 === poderes[0] && heroi2 === poderes[1]) {
+            return heroi2;
+        } else if (heroi1 === poderes[2] && heroi2 === poderes[3]){
+            return heroi2;
         }
-        res.json({
-            batalhas: resultado.rows[0],
-        })
-    } catch (error) {
-        console.error('Erro ao pegar batalhas por ID ', error);
-        res.status(500).send('Erro ao pegar batalhas por ID');
-    }
-});
+        
+}
+}
+}
+
+
+
+
+
+
+
+// app.get('/batalhas', async (req, res) => {
+//     try {
+//         const { rows } = await pool.query('SELECT * FROM batalhas');
+//         res.json(rows);
+//     } catch (error) {
+//         console.error("Erro ao mostrar batalha", error);
+//         res.status(500).send("Erro ao mostrar batalha");
+//     }
+// });
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT} 🤯😤🤠🤬`);

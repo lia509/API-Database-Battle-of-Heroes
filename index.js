@@ -179,15 +179,15 @@ async function calcularVencedor(heroi1Id, heroi2Id) {
 
 
 
-// app.get('/batalhas', async (req, res) => {
-//     try {
-//         const { rows } = await pool.query('SELECT * FROM batalhas');
-//         res.json(rows);
-//     } catch (error) {
-//         console.error("Erro ao mostrar batalha", error);
-//         res.status(500).send("Erro ao mostrar batalha");
-//     }
-// });
+app.get('/batalhas', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM batalhas');
+        res.json(rows);
+    } catch (error) {
+        console.error("Erro ao mostrar batalha", error);
+        res.status(500).send("Erro ao mostrar batalha");
+    }
+});
 
 
 

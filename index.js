@@ -83,6 +83,37 @@ app.get('/herois/:id', async(req, res) => {
     }
 });
 
+app.get("/herois/nome/:nome", async (req, res) => {
+    try {
+      const { nome } = req.params;
+      const { rows } = await pool.query("SELECT * FROM herois WHERE nome = $1", [
+        nome,
+      ]);
+      res.status(200).send({
+        message: "Herois encontrados com sucesso!",
+        herois: rows,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar heroi", error);
+      res.status(500).send("Erro ao buscar herois");
+    }
+  });
+
+//   app.get("/herois/poder/:poder", async (req, res) => {
+//     try {
+//       const { poder } = req.params;
+//       const { rows } = await pool.query("SELECT * FROM herois WHERE poder = $1", [
+//         poder,
+//       ]);
+//       res.status(200).send({
+//         message: "Herois encontrados com sucesso!",
+//         herois: rows,
+//       });
+//     } catch (error) {
+//       console.error("Erro ao buscar heroi", error);
+//       res.status(500).send("Erro ao buscar heroi");
+//     }
+//   });
 
 
 // ROTAS BATALHAS
@@ -100,10 +131,12 @@ app.get('/batalhas', async (req, res) => {
     }
 });
 
+
+
 app.get('/batalhas/:id/:id', async(req, res) => {
     try {
         const { id } = req. params;
-        const resultado = await pool.query('SELECT * FROM batalhas WHERE id = $1', [id])
+        const resultado = await pool.query('SELECT herois.id AS Herois FROM herois INNER JOIN batalhas ON batalhas.heroi1_id = heroi2_id', [id])
         if(resultado.rowCount == 0){
             res.status(404).send({mensagem: 'Id não encontrado'});
         }
